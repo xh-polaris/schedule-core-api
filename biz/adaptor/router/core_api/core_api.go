@@ -22,7 +22,7 @@ func Register(r *server.Hertz) {
 		_schedule.POST("/create", append(_createscheduleMw(), core_api.CreateSchedule)...)
 		_schedule.POST("/create_list", append(_createschedulesMw(), core_api.CreateSchedules)...)
 		_schedule.POST("/create_ori", append(_createschedulefromoriginMw(), core_api.CreateScheduleFromOrigin)...)
-		_schedule.OPTIONS("/list", append(_getschedulesMw(), core_api.GetSchedules)...)
+		_schedule.POST("/list", append(_getschedulesMw(), core_api.GetSchedules)...)
 		_schedule.POST("/update", append(_updatescheduleMw(), core_api.UpdateSchedule)...)
 	}
 	{

@@ -117,16 +117,18 @@ func (s ScheduleService) CreateScheduleFromOrigin(ctx context.Context, req *core
 	}
 	var simpleSchedulesJson string
 	// 获取模型响应
-	if simpleSchedulesJson, ok := response["choice"].([]map[string]interface{})[0]["message"].(map[string]interface{})["content"].(string); !ok || simpleSchedulesJson == "" {
+	message := response["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})
+	simpleSchedulesJson, ok := message["content"].(string)
+	if !ok || simpleSchedulesJson == "" {
 		return nil, consts.ErrCall
 	}
-	var simpleSchedules []SimpleSchedule
+	simpleSchedules := &PhrasedSchedule{}
 	err = sonic.UnmarshalString(simpleSchedulesJson, &simpleSchedules)
 	if err != nil {
 		return nil, consts.ErrCall
 	}
 	var schedules []*core_api.Schedule
-	for _, simpleSchedule := range simpleSchedules {
+	for _, simpleSchedule := range simpleSchedules.SimpleSchedules {
 		aSchedule := &core_api.Schedule{
 			Id:          primitive.NewObjectID().Hex(),
 			UserId:      userId,
@@ -142,13 +144,14 @@ func (s ScheduleService) CreateScheduleFromOrigin(ctx context.Context, req *core
 			CreateTime:  time.Now().Unix(),
 			UpdateTime:  time.Now().Unix(),
 		}
-		ddl, err := time.Parse("0001-01-01 00:00:00", simpleSchedule.DDL)
+		ddl, err := time.Parse("2006-01-02 15:04:05", simpleSchedule.DDL)
 		if err != nil {
 			return nil, consts.ErrCall
 		}
 		if !ddl.IsZero() {
 			aSchedule.Ddl = ddl.Unix()
 		}
+		schedules = append(schedules, aSchedule)
 	}
 	return &core_api.CreateScheduleFromOriginResp{
 		Code:      0,
@@ -282,7 +285,7 @@ func (s ScheduleService) UpdateSchedule(ctx context.Context, req *core_api.Updat
 
 	return &core_api.UpdateScheduleResp{
 		Code: 0,
-		Msg:  "创建成功",
+		Msg:  "更新成功",
 	}, nil
 }
 
@@ -324,4 +327,8 @@ type SimpleSchedule struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	DDL         string `json:"ddl"`
+}
+
+type PhrasedSchedule struct {
+	SimpleSchedules []SimpleSchedule `json:"schedules"`
 }

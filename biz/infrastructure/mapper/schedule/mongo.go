@@ -77,10 +77,10 @@ func (m *MongoMapper) FindMany(ctx context.Context, userId string, p *basic.Pagi
 		}, &options.FindOptions{
 			Skip:  &skip,
 			Limit: &limit,
-			Sort: bson.M{
-				consts.Top:        -1,
-				consts.Priority:   -1,
-				consts.CreateTime: -1,
+			Sort: bson.D{
+				{Key: consts.Top, Value: -1},
+				{Key: consts.Priority, Value: -1},
+				{Key: consts.CreateTime, Value: -1},
 			},
 		})
 	if err != nil {

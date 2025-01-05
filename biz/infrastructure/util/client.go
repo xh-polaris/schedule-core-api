@@ -185,7 +185,7 @@ func (c *HttpClient) CallGLM(origin string) (map[string]interface{}, error) {
 	header["Charset"] = consts.CharSetUTF8
 	header["Authorization"] = "Bearer " + config.GetConfig().GLMKey
 
-	now := time.Now().Format("2025-01-01 12:00:00")
+	now := time.Now().Format("2006-01-02 15:04:05")
 	// 定义消息结构
 	message := []map[string]interface{}{
 		{

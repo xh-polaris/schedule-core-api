@@ -126,7 +126,7 @@ func UpdateSchedule(ctx context.Context, c *app.RequestContext) {
 }
 
 // GetSchedules .
-// @router /schedule/list [OPTIONS]
+// @router /schedule/list [POST]
 func GetSchedules(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req core_api.GetSchedulesReq
