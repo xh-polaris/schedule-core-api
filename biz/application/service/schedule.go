@@ -165,20 +165,25 @@ func (s ScheduleService) CreateSchedules(ctx context.Context, req *core_api.Crea
 		return nil, consts.ErrNotAuthentication
 	}
 
+	defaultGroupId := ""
+
 	// 应该用事务，插入失败就全部回滚，这里偷个懒
 	for _, sc := range req.Schedules {
 		oid, err := primitive.ObjectIDFromHex(sc.Id)
 		if err != nil {
 			return nil, consts.ErrInvalidObjectId
 		}
+
 		groupId := sc.Group
-		if sc.Group == "" {
+		if sc.Group == "" && defaultGroupId == "" {
 			// 获取默认组id
-			g, err := s.GroupService.FindDefaultGroup(ctx, userId)
+			defaultGroupId, err = s.GroupService.FindDefaultGroup(ctx, userId)
 			if err != nil {
 				return nil, err
 			}
-			groupId = g
+			groupId = defaultGroupId
+		} else if sc.Group == "" {
+			groupId = defaultGroupId
 		}
 
 		aSchedule := &schedule.Schedule{

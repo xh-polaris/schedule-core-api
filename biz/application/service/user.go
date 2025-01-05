@@ -110,6 +110,36 @@ func (u *UserService) SignIn(ctx context.Context, req *core_api.SignInReq) (*cor
 	}, nil
 }
 
+func (s *UserService) SendVerifyCode(ctx context.Context, req *core_api.SendVerifyCodeReq) (*core_api.SendVerifyCodeResp, error) {
+	aUser, err := s.UserMapper.FindOneByPhone(ctx, req.AuthId)
+	if req.Type == 1 { // 登录验证码
+		// 查找数据库判断手机号是否注册过
+		if errors.Is(err, consts.ErrNotFound) || aUser == nil { // 未找到，说明没有注册
+			return nil, consts.ErrNotSignUp
+		} else if err != nil {
+			return nil, consts.ErrSend
+		}
+	} else {
+		if err == nil && aUser != nil {
+			return nil, consts.ErrRepeatedSignUp
+		} else if err != nil && !errors.Is(err, consts.ErrNotFound) {
+			return nil, consts.ErrSignUp
+		}
+	}
+
+	// 通过中台发送验证码
+	httpClient := util.NewHttpClient()
+	_, err = httpClient.SendVerifyCode(req.AuthType, req.AuthId)
+	if err != nil {
+		return nil, consts.ErrSend
+	}
+
+	return &core_api.SendVerifyCodeResp{
+		Code: 0,
+		Msg:  "发送验证码成功，请注意查收",
+	}, nil
+}
+
 //func (u *UserService) GetUserInfo(ctx context.Context, req *core_api.GetUserInfoReq) (*core_api.GetUserInfoResp, error) {
 //	userMeta := adaptor.ExtractUserMeta(ctx)
 //	if userMeta.GetUserId() == "" {

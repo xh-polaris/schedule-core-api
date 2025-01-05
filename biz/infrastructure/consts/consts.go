@@ -9,6 +9,8 @@ const (
 	Name         = "name"
 	Status       = "status"
 	Phone        = "phone"
+	Top          = "top"
+	Priority     = "priority"
 	CreateTime   = "create_time"
 	UpdateTime   = "update_time"
 	DeleteTime   = "delete_time"

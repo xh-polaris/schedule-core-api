@@ -45,6 +45,22 @@ func SignIn(ctx context.Context, c *app.RequestContext) {
 	adaptor.PostProcess(ctx, c, &req, resp, err)
 }
 
+// SendVerifyCode .
+// @router /usr/send_verify_code [POST]
+func SendVerifyCode(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req core_api.SendVerifyCodeReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	p := provider.Get()
+	resp, err := p.UserService.SendVerifyCode(ctx, &req)
+	adaptor.PostProcess(ctx, c, &req, resp, err)
+}
+
 // CreateSchedule .
 // @router /schedule/create [POST]
 func CreateSchedule(ctx context.Context, c *app.RequestContext) {

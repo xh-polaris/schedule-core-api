@@ -55,3 +55,13 @@ func _createschedulesMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _stsMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _sendverifycodeMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
