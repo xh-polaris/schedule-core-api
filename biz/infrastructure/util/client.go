@@ -186,6 +186,7 @@ func (c *HttpClient) CallGLM(origin string) (map[string]interface{}, error) {
 	header["Authorization"] = "Bearer " + config.GetConfig().GLMKey
 
 	now := time.Now().Format("2006-01-02 15:04:05")
+	fmt.Printf("当前时间：%v\n", now)
 	// 定义消息结构
 	message := []map[string]interface{}{
 		{
@@ -204,6 +205,7 @@ func (c *HttpClient) CallGLM(origin string) (map[string]interface{}, error) {
 	body["messages"] = message
 
 	resp, err := c.SendRequest(consts.Post, consts.GlmUrl, header, body)
+	fmt.Println("模型响应:", resp)
 	if err != nil {
 		return nil, err
 	}

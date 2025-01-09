@@ -25,7 +25,7 @@ const (
 // http
 const (
 	GlmUrl                    = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-	GlmModel                  = "glm-4v-flash"
+	GlmModel                  = "glm-4-air"
 	Post                      = "POST"
 	PlatformSignInUrl         = "https://api.xhpolaris.com/platform/auth/sign_in"
 	PlatformSetPasswordUrl    = "https://api.xhpolaris.com/platform/auth/set_password"
