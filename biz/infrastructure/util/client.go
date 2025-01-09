@@ -201,7 +201,7 @@ func (c *HttpClient) CallGLM(origin string) (map[string]interface{}, error) {
 	}
 
 	body := make(map[string]interface{})
-	body["model"] = consts.GlmModel
+	body["model"] = config.GetConfig().GLMModel
 	body["messages"] = message
 
 	resp, err := c.SendRequest(consts.Post, consts.GlmUrl, header, body)

@@ -26,8 +26,9 @@ type Config struct {
 		URL string
 		DB  string
 	}
-	Cache  cache.CacheConf
-	GLMKey string
+	Cache    cache.CacheConf
+	GLMKey   string
+	GLMModel string
 }
 
 func NewConfig() (*Config, error) {
