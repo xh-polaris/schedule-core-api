@@ -80,6 +80,7 @@ func (m *MongoMapper) FindMany(ctx context.Context, userId string, p *basic.Pagi
 			Skip:  &skip,
 			Limit: &limit,
 			Sort: bson.D{
+				{Key: "done", Value: 1},
 				{Key: consts.Top, Value: -1},
 				{Key: consts.Priority, Value: -1},
 				{Key: consts.CreateTime, Value: -1},
