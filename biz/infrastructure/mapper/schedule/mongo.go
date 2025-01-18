@@ -60,7 +60,8 @@ func (m *MongoMapper) FindOne(ctx context.Context, id string) (*Schedule, error)
 	}
 	var u Schedule
 	err = m.conn.FindOneNoCache(ctx, &u, bson.M{
-		consts.ID: oid,
+		consts.ID:     oid,
+		consts.Status: consts.DefaultStatus,
 	})
 	if err != nil {
 		return nil, consts.ErrNotFound
