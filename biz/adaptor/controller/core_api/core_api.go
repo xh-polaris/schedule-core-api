@@ -61,6 +61,38 @@ func SendVerifyCode(ctx context.Context, c *app.RequestContext) {
 	adaptor.PostProcess(ctx, c, &req, resp, err)
 }
 
+// GetUserInfo .
+// @router /user/get_info [GET]
+func GetUserInfo(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req core_api.GetUserInfoReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	p := provider.Get()
+	resp, err := p.UserService.GetUserInfo(ctx, &req)
+	adaptor.PostProcess(ctx, c, &req, resp, err)
+}
+
+// UpdateUserInfo .
+// @router user/update_info [POST]
+func UpdateUserInfo(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req core_api.UpdateUserInfoReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	p := provider.Get()
+	resp, err := p.UserService.UpdateUserInfo(ctx, &req)
+	adaptor.PostProcess(ctx, c, &req, resp, err)
+}
+
 // CreateSchedule .
 // @router /schedule/create [POST]
 func CreateSchedule(ctx context.Context, c *app.RequestContext) {
@@ -138,5 +170,21 @@ func GetSchedules(ctx context.Context, c *app.RequestContext) {
 
 	p := provider.Get()
 	resp, err := p.ScheduleService.GetSchedules(ctx, &req)
+	adaptor.PostProcess(ctx, c, &req, resp, err)
+}
+
+// DeleteSchedule .
+// @router /schedule/delete [GET]
+func DeleteSchedule(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req core_api.DeleteScheduleReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	p := provider.Get()
+	resp, err := p.ScheduleService.DeleteSchedule(ctx, &req)
 	adaptor.PostProcess(ctx, c, &req, resp, err)
 }

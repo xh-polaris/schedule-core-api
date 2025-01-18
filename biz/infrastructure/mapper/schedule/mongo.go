@@ -23,6 +23,7 @@ type IMongoMapper interface {
 	Update(ctx context.Context, schedule *Schedule) error
 	FindOne(ctx context.Context, id string) (*Schedule, error)
 	FindMany(ctx context.Context, userId string, p *basic.PaginationOptions) (data []*Schedule, total int64, err error)
+	DeleteOne(ctx context.Context, userId string, id string) error
 }
 
 type MongoMapper struct {
@@ -95,4 +96,19 @@ func (m *MongoMapper) FindMany(ctx context.Context, userId string, p *basic.Pagi
 		return nil, 0, err
 	}
 	return data, total, nil
+}
+
+func (m *MongoMapper) DeleteOne(ctx context.Context, userId string, id string) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return consts.ErrInvalidObjectId
+	}
+	_, err = m.conn.UpdateOneNoCache(ctx, bson.M{
+		consts.ID:         oid,
+		consts.UpdateTime: userId,
+	}, bson.M{
+		consts.Status:     consts.DefaultStatus,
+		consts.DeleteTime: time.Now(),
+	})
+	return err
 }

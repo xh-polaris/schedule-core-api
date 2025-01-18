@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/google/wire"
+	"github.com/xh-polaris/schedule-core-api/biz/adaptor"
 	"github.com/xh-polaris/schedule-core-api/biz/infrastructure/consts"
 	"github.com/xh-polaris/schedule-core-api/biz/infrastructure/util"
 
@@ -17,6 +18,9 @@ import (
 type IUserService interface {
 	SignUp(ctx context.Context, req *core_api.SignUpReq) (*core_api.SignUpResp, error)
 	SignIn(ctx context.Context, req *core_api.SignInReq) (*core_api.SignInResp, error)
+	SendVerifyCode(ctx context.Context, req *core_api.SendVerifyCodeReq) (*core_api.SendVerifyCodeResp, error)
+	GetUserInfo(ctx context.Context, req *core_api.GetUserInfoReq) (*core_api.GetUserInfoResp, error)
+	UpdateUserInfo(ctx context.Context, req *core_api.UpdateUserInfoReq) (*core_api.UpdateUserInfoResp, error)
 }
 type UserService struct {
 	UserMapper   *user.MongoMapper
@@ -110,8 +114,8 @@ func (u *UserService) SignIn(ctx context.Context, req *core_api.SignInReq) (*cor
 	}, nil
 }
 
-func (s *UserService) SendVerifyCode(ctx context.Context, req *core_api.SendVerifyCodeReq) (*core_api.SendVerifyCodeResp, error) {
-	aUser, err := s.UserMapper.FindOneByPhone(ctx, req.AuthId)
+func (u *UserService) SendVerifyCode(ctx context.Context, req *core_api.SendVerifyCodeReq) (*core_api.SendVerifyCodeResp, error) {
+	aUser, err := u.UserMapper.FindOneByPhone(ctx, req.AuthId)
 	if req.Type == 1 { // 登录验证码
 		// 查找数据库判断手机号是否注册过
 		if errors.Is(err, consts.ErrNotFound) || aUser == nil { // 未找到，说明没有注册
@@ -140,58 +144,53 @@ func (s *UserService) SendVerifyCode(ctx context.Context, req *core_api.SendVeri
 	}, nil
 }
 
-//func (u *UserService) GetUserInfo(ctx context.Context, req *core_api.GetUserInfoReq) (*core_api.GetUserInfoResp, error) {
-//	userMeta := adaptor.ExtractUserMeta(ctx)
-//	if userMeta.GetUserId() == "" {
-//		return nil, consts.ErrNotAuthentication
-//	}
-//	aUser, err := u.UserMapper.FindOne(ctx, userMeta.GetUserId())
-//	if err != nil {
-//		return &core_api.GetUserInfoResp{
-//			Code:    -1,
-//			Msg:     "查询用户信息失败，请先登录或重试",
-//			Payload: nil,
-//		}, nil
-//	}
-//	return &core_api.GetUserInfoResp{
-//		Code: 0,
-//		Msg:  "查询成功",
-//		Payload: &core_api.GetUserInfoResp_Payload{
-//			Name:  aUser.Username,
-//			Count: aUser.Count,
-//			Phone: aUser.Phone,
-//		},
-//	}, nil
-//}
-//
-//func (u *UserService) UpdateUserInfo(ctx context.Context, req *core_api.UpdateUserInfoReq) (*core_api.Response, error) {
-//	// 获取用户id
-//	userMeta := adaptor.ExtractUserMeta(ctx)
-//	if userMeta.GetUserId() == "" {
-//		return nil, consts.ErrNotAuthentication
-//	}
-//
-//	// 根据用户id查询这个用户
-//	aUser, err := u.UserMapper.FindOne(ctx, userMeta.GetUserId())
-//	if err != nil {
-//		return nil, consts.ErrNotFound
-//	}
-//
-//	// 更新用户信息
-//	aUser.Username = req.Name
-//
-//	// 存入新的用户信息
-//	err = u.UserMapper.Update(ctx, aUser)
-//	if err != nil {
-//		return nil, consts.ErrUpdate
-//	}
-//
-//	// 返回响应
-//	return &core_api.Response{
-//		Code: 0,
-//		Msg:  "更新成功",
-//	}, nil
-//}
+func (u *UserService) GetUserInfo(ctx context.Context, req *core_api.GetUserInfoReq) (*core_api.GetUserInfoResp, error) {
+	userMeta := adaptor.ExtractUserMeta(ctx)
+	if userMeta.GetUserId() == "" {
+		return nil, consts.ErrNotAuthentication
+	}
+	aUser, err := u.UserMapper.FindOne(ctx, userMeta.GetUserId())
+	if err != nil {
+		return &core_api.GetUserInfoResp{
+			Name:  "",
+			Phone: "",
+		}, err
+	}
+	return &core_api.GetUserInfoResp{
+		Name:  aUser.Username,
+		Phone: aUser.Phone,
+	}, nil
+}
+
+func (u *UserService) UpdateUserInfo(ctx context.Context, req *core_api.UpdateUserInfoReq) (*core_api.UpdateUserInfoResp, error) {
+	// 获取用户id
+	userMeta := adaptor.ExtractUserMeta(ctx)
+	if userMeta.GetUserId() == "" {
+		return nil, consts.ErrNotAuthentication
+	}
+
+	// 根据用户id查询这个用户
+	aUser, err := u.UserMapper.FindOne(ctx, userMeta.GetUserId())
+	if err != nil {
+		return nil, consts.ErrNotFound
+	}
+
+	// 更新用户信息
+	aUser.Username = req.Name
+
+	// 存入新的用户信息
+	err = u.UserMapper.Update(ctx, aUser)
+	if err != nil {
+		return nil, consts.ErrUpdate
+	}
+
+	// 返回响应
+	return &core_api.UpdateUserInfoResp{
+		Code: 0,
+		Msg:  "更新成功",
+	}, nil
+}
+
 //
 //func (u *UserService) UpdatePassword(ctx context.Context, req *core_api.UpdatePasswordReq) (*core_api.UpdatePasswordResp, error) {
 //	// 获取用户id

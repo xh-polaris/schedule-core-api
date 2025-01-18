@@ -65,3 +65,18 @@ func _sendverifycodeMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _deletescheduleMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getuserinfoMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updateuserinfoMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

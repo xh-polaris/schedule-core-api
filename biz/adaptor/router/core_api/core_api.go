@@ -22,13 +22,16 @@ func Register(r *server.Hertz) {
 		_schedule.POST("/create", append(_createscheduleMw(), core_api.CreateSchedule)...)
 		_schedule.POST("/create_list", append(_createschedulesMw(), core_api.CreateSchedules)...)
 		_schedule.POST("/create_ori", append(_createschedulefromoriginMw(), core_api.CreateScheduleFromOrigin)...)
+		_schedule.GET("/delete", append(_deletescheduleMw(), core_api.DeleteSchedule)...)
 		_schedule.POST("/list", append(_getschedulesMw(), core_api.GetSchedules)...)
 		_schedule.POST("/update", append(_updatescheduleMw(), core_api.UpdateSchedule)...)
 	}
 	{
 		_user := root.Group("/user", _userMw()...)
+		_user.GET("/get_info", append(_getuserinfoMw(), core_api.GetUserInfo)...)
 		_user.POST("/send_verify_code", append(_sendverifycodeMw(), core_api.SendVerifyCode)...)
 		_user.POST("/sign_in", append(_signinMw(), core_api.SignIn)...)
 		_user.POST("/sign_up", append(_signupMw(), core_api.SignUp)...)
+		_user.POST("/update_info", append(_updateuserinfoMw(), core_api.UpdateUserInfo)...)
 	}
 }

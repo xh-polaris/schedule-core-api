@@ -20,6 +20,7 @@ type IScheduleService interface {
 	CreateSchedules(ctx context.Context, c *core_api.CreateSchedulesReq) (*core_api.CreateSchedulesResp, error)
 	UpdateSchedule(ctx context.Context, req *core_api.UpdateScheduleReq) (*core_api.UpdateScheduleResp, error)
 	GetSchedules(ctx context.Context, req *core_api.GetSchedulesReq) (*core_api.GetSchedulesResp, error)
+	DeleteSchedule(ctx context.Context, req *core_api.DeleteScheduleReq) (*core_api.DeleteScheduleResp, error)
 }
 type ScheduleService struct {
 	ScheduleMapper *schedule.MongoMapper
@@ -331,4 +332,25 @@ type SimpleSchedule struct {
 
 type PhrasedSchedule struct {
 	SimpleSchedules []SimpleSchedule `json:"schedules"`
+}
+
+func (s ScheduleService) DeleteSchedule(ctx context.Context, req *core_api.DeleteScheduleReq) (*core_api.DeleteScheduleResp, error) {
+	// 获取userId
+	userId := adaptor.ExtractUserMeta(ctx).GetUserId()
+	if userId == "" {
+		return nil, consts.ErrNotAuthentication
+	}
+
+	err := s.ScheduleMapper.DeleteOne(ctx, userId, req.Id)
+	if err != nil {
+		return &core_api.DeleteScheduleResp{
+			Code: -1,
+			Msg:  "删除失败",
+		}, err
+	}
+	res := &core_api.DeleteScheduleResp{
+		Code: 0,
+		Msg:  "success",
+	}
+	return res, nil
 }
