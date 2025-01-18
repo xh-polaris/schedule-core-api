@@ -104,11 +104,13 @@ func (m *MongoMapper) DeleteOne(ctx context.Context, userId string, id string) e
 		return consts.ErrInvalidObjectId
 	}
 	_, err = m.conn.UpdateOneNoCache(ctx, bson.M{
-		consts.ID:         oid,
-		consts.UpdateTime: userId,
+		consts.ID:     oid,
+		consts.UserID: userId,
 	}, bson.M{
-		consts.Status:     consts.DefaultStatus,
-		consts.DeleteTime: time.Now(),
+		"$set": bson.M{
+			consts.Status:     consts.DefaultStatus,
+			consts.DeleteTime: time.Now(),
+		},
 	})
 	return err
 }
