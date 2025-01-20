@@ -110,7 +110,7 @@ func (m *MongoMapper) DeleteOne(ctx context.Context, userId string, id string) e
 		consts.UserID: userId,
 	}, bson.M{
 		"$set": bson.M{
-			consts.Status:     consts.DefaultStatus,
+			consts.Status:     consts.DeleteStatus,
 			consts.DeleteTime: time.Now(),
 		},
 	})

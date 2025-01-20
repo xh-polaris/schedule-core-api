@@ -14,7 +14,7 @@ const (
 	CreateTime   = "create_time"
 	UpdateTime   = "update_time"
 	DeleteTime   = "delete_time"
-	DeleteStatus = 1
+	DeleteStatus = -1
 )
 
 // mongo关键字
